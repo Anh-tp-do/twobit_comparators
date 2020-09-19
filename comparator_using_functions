@@ -1,1 +1,34 @@
-
+module twobit_comparator_function
+	(
+	input wire [1:0] a, b,
+	output reg eq, gr, ls
+	);
+	reg e0, gr0, ls0;
+	
+	initial
+	begin
+		eq <= 0;
+		gr <= 0;
+		ls <= 0;		
+	end
+	
+	always @*
+        begin
+        eq <= eq_tsk(a, b);
+        gr <= gr_tsk(a, b);
+		ls <= ~eq & ~gr;
+        end 
+	
+	// functions
+  function eq_tsk	(input [1:0] i0, i1);		// a < b
+        eq_tsk = (~i0[1] & ~i0[0] & ~i1[1] & ~i1[0]) 
+		             | (~i0[1] & i0[0] & ~i1[1] & i1[0]) 
+					 | (i0[1] & ~i0[0] & i1[1] & ~i1[0])
+		             | (i0[1] & i0[0] & i1[1] & i1[0]);
+    endfunction 
+	
+  function gr_tsk	(input [1:0] i0, i1);		// a > b
+         gr_tsk = (i0[1]& ~i1[1]) | (~i0[1]&i0[0]&~i1[1]&~i1[0]);
+    endfunction 
+	
+endmodule
