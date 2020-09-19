@@ -1,0 +1,58 @@
+module twobit_comparator_task
+	(
+	input wire [1:0] a, b,
+	output reg eq, gr, ls
+	);
+	reg e0, gr0, ls0;
+	
+	initial
+	begin
+		eq <= 0;
+		gr <= 0;
+		ls <= 0;		
+	end
+	
+	always @*
+        begin
+        eq_tsk(0, a, b, e0);
+        eq <= e0;
+	    end
+	
+	always @*
+		begin
+          gr_tsk(0, a, b, gr0);
+          gr <= gr0;
+        end
+		
+	always @*
+      	begin
+		ls <= ~eq & ~gr;
+        end 
+	
+	// tasks
+	task eq_tsk								// a == b
+		(
+		input integer delay,
+        input [1:0] i0, i1,
+		output eq1
+		);
+		begin
+        #delay eq1 = (~i0[1] & ~i0[0] & ~i1[1] & ~i1[0]) 
+		             | (~i0[1] & i0[0] & ~i1[1] & i1[0]) 
+					 | (i0[1] & ~i0[0] & i1[1] & ~i1[0])
+		             | (i0[1] & i0[0] & i1[1] & i1[0]);
+		end
+	endtask 
+	
+	task gr_tsk								// a > b
+		(
+		input integer delay,
+        input [1:0] i0, i1,
+		output grt
+		);
+		begin
+          #delay grt = (i0[1]& ~i1[1]) | (~i0[1]&i0[0]&~i1[1]&~i1[0]);
+		end
+	endtask 
+	
+endmodule
